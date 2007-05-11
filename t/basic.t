@@ -10,12 +10,12 @@ use ok 'Template::Plugin::JSON';
 isa_ok( bless({}, "Template::Plugin::JSON"), "Template::Plugin::VMethods" );
 
 SKIP: {
-	skip "JSON::Syck is required for this", 2
-		unless eval { require JSON::Syck; 1 };
+	skip "JSON::XS is required for this", 2
+		unless eval { require JSON::XS; 1 };
 
 	undef *Template::Plugin::JSON::json;
 
-	Template::Plugin::JSON->_load_driver("Syck");
+	Template::Plugin::JSON->_load_driver("XS");
 
 	ok(*Template::Plugin::JSON::json, "json sub defined");
 
@@ -23,12 +23,12 @@ SKIP: {
 }
 
 SKIP: {
-	skip "JSON::Converter is required for this", 2
-		unless eval { require JSON::Converter; 1 };
+	skip "JSON::Any is required for this", 2
+		unless eval { require JSON::Any; 1 };
 
 	undef *Template::Plugin::JSON::json;
 
-	Template::Plugin::JSON->_load_driver("Converter");
+	Template::Plugin::JSON->_load_driver("Any");
 
 	ok(*Template::Plugin::JSON::json, "json sub defined");
 

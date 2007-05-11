@@ -27,37 +27,56 @@ sub _load_driver {
 
 sub _load_specific_driver {
     my ( $self, $driver ) = @_;
-    
-	my $method = lc("_load_${driver}_driver");
-	$self->can($method) || croak "Unknown JSON driver: $driver";
 
-    my $module = "JSON/${driver}.pm";
-    require $module;
+	local $@;
 
-    $self->$method;
+   	foreach my $module ( "JSON::$driver", $driver ) {
+		my $method = lc("_load_${module}_driver");
+		$method =~ s/\W+/_/g;
+
+		$self->can($method) || next;
+
+		my $module_file = "${module}.pm";
+		$module_file =~ s{::}{/}g;
+
+		eval { require $module_file };
+		return $self->$method;
+	}
+
+	croak "Unknown JSON driver: $driver";
 }
 
 sub _load_any_driver {
     my $self = shift;
 
 	return if defined &json;
-    if ( eval { require JSON::Any } ) {
-            $self->_load_json_any_driver;
-    } elsif ( eval { require JSON::Syck; 1 } ) {
-        $self->_load_syck_driver;
-    } elsif( eval { require JSON::Converter; 1 } ) {
-        $self->_load_converter_driver;
-    } else {
-		croak "Couldn't find a JSON driver, please install JSON::Syck or JSON::Converter";
+
+	local $@;
+    if ( eval { require JSON::XS; 1 } ) {
+        $self->_load_json_xs_driver;
+	} elsif ( eval { require JSON::Any; 1 } ) {
+		$self->_load_json_any_driver;
+	} elsif ( eval { require JSON::Syck; 1 } ) {
+		$self->_load_json_syck_driver;
+	} elsif ( eval { require JSON::Converter; 1 } ) {
+		$self->_load_json_converter_driver;
+	} else {
+		croak "Couldn't find a JSON driver, please install JSON::Any or JSON::XS";
 	}
 }
 
-sub _load_syck_driver {
+sub _load_json_xs_driver {
+    my $self = shift;
+	my $j = JSON::XS->new->utf8->allow_nonref;
+    *json = sub { $j->encode(shift) }
+}
+
+sub _load_json_syck_driver {
     my $self = shift;
     *json = \&JSON::Syck::Dump;
 }
 
-sub _load_converter_driver {
+sub _load_json_converter_driver {
     my $self = shift;
 
     my $conv   = JSON::Converter->new;
