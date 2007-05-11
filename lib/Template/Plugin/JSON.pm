@@ -41,8 +41,9 @@ sub _load_any_driver {
     my $self = shift;
 
 	return if defined &json;
-
-    if ( eval { require JSON::Syck; 1 } ) {
+    if ( eval { require JSON::Any } ) {
+            $self->_load_json_any_driver;
+    } elsif ( eval { require JSON::Syck; 1 } ) {
         $self->_load_syck_driver;
     } elsif( eval { require JSON::Converter; 1 } ) {
         $self->_load_converter_driver;
@@ -63,6 +64,15 @@ sub _load_converter_driver {
     *json = sub {
         my $data = shift;
         ref $data ? $conv->objToJson($data) : $conv->valueToJson($data);
+    };
+}
+
+sub _load_json_any_driver {
+    my $self = shift;
+    JSON::Any->import();
+    my $conv = JSON::Any->new(allow_nonref => 1);
+    *json = sub {  
+        $conv->encode($_[0]); 
     };
 }
 
