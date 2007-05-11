@@ -1,0 +1,8 @@
+0.03
+	- use JSON::Any & JSON::XS
+
+0.02
+	- Fix broken SCALAR_OPS
+
+0.01
+	- Initial release
