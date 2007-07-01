@@ -119,9 +119,12 @@ Template::Plugin::JSON - Adds a .json vmethod for all TT values.
 
 This plugin provides a C<.json> vmethod to all value types when loaded.
 
-With no argument it will try to load L<JSON::Syck> and then L<JSON::Converter>.
-If used as C<[% USE JSON("Syck") %]> or C<[% USE JSON("Converter") %]> it will
-load that specific plugin.
+With no argument it will try to load L<JSON::XS>, then L<JSON::Any>. Afterwords
+it will try L<JSON::Syck> and then L<JSON::Converter> for upgrade
+compatibility.  If used as C<[% USE JSON("Syck") %]> or
+C<[% USE JSON("Converter") %]> it will load that specific plugin.
+
+L<JSON::XS> is loaded before L<JSON::Any> due to specific options.
 
 If no plugin could be loaded an exception is thrown. Check for errors from
 L<Template/process>.
