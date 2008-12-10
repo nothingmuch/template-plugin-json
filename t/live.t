@@ -3,21 +3,15 @@
 use strict;
 use warnings;
 
-use Test::More;
-
-BEGIN {
-	plan 'skip_all' => "at least one JSON lib has to be installed"
-		unless eval { require JSON::Syck; 1 } || eval { require JSON::Converter };
-	
-	plan tests => 4;
-}
+use Test::More tests => 4;
 
 use Template;
+use JSON;
 
 use ok 'Template::Plugin::JSON';
 
 ok( Template->new->process(
-	\qq{[% USE JSON %]{ "blah":[% blah.json %], "baz":[% baz.json %], "oink":[% oink.json %] }},
+	\qq{[% USE JSON ( pretty => 1 ) %]{ "blah":[% blah.json %], "baz":[% baz.json %], "oink":[% oink.json %] }},
 	my $vars = {
 		blah => { foo => "bar" },
 		baz  => "ze special string wis some ' qvotes\"",
@@ -26,14 +20,14 @@ ok( Template->new->process(
 	\(my $out),
 ), "template processing" ) || warn( Template->error );
 
+warn $out;
+
 like($out, qr/\{\W*foo\W*:\W*bar\W*\}/, "output seems OK" );
 
-my $load = defined &JSON::Syck::Load
-	? \&JSON::Syck::Load
-	: do { require JSON; sub { JSON->new->jsonToObj(shift) } };
+like( $out, "\n", "pretty output" );
 
 is_deeply(
-	$load->($out),
+	from_json($out),
 	$vars,
 	"round tripping",
 );

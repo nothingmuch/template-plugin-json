@@ -1,98 +1,70 @@
 #!/usr/bin/perl
 
 package Template::Plugin::JSON;
-use base qw/Template::Plugin::VMethods/;
+use Mouse;
+
+use JSON ();
 
 use Carp qw/croak/;
 
+extends qw(Mouse::Object Template::Plugin);
+
 our $VERSION = "0.03";
 
-our @SCALAR_OPS = our @LIST_OPS = our @HASH_OPS = ("json");
 
-sub new {
-    my ( $self, $c, $driver ) = @_;
-    $self->_load_driver($driver);
-    $self->SUPER::new($c);
-}
+has context => (
+	isa => "Object",
+	is  => "ro",
+);
 
-sub _load_driver {
-    my ( $self, $driver ) = @_;
+has json_converter => (
+	isa => "Object",
+	is  => "ro",
+	lazy_build => 1,
+);
 
-    if ( $driver ) {
-        $self->_load_specific_driver($driver);
-    } else {
-        $self->_load_any_driver;
-    }
-}
+has json_args => (
+	isa => "HashRef",
+	is  => "ro",
+	default => sub { {} },
+);
 
-sub _load_specific_driver {
-    my ( $self, $driver ) = @_;
+sub BUILDARGS {
+    my ( $class, $c, $args ) = @_;
 
-	local $@;
-
-   	foreach my $module ( "JSON::$driver", $driver ) {
-		my $method = lc("_load_${module}_driver");
-		$method =~ s/\W+/_/g;
-
-		$self->can($method) || next;
-
-		my $module_file = "${module}.pm";
-		$module_file =~ s{::}{/}g;
-
-		eval { require $module_file };
-		return $self->$method;
+	unless ( ref $args ) {
+		warn "Single arguent form is deprecated, this module always uses JSON/JSON::XS now";
+		$args = {};
 	}
 
-	croak "Unknown JSON driver: $driver";
+	return { %$args, context => $c, json_args => $args };
 }
 
-sub _load_any_driver {
-    my $self = shift;
+sub _build_json_converter {
+	my $self = shift;
 
-	return if defined &json;
+	my $json = JSON->new->allow_nonref(1);
 
-	local $@;
-    if ( eval { require JSON::XS; 1 } ) {
-        $self->_load_json_xs_driver;
-	} elsif ( eval { require JSON::Any; 1 } ) {
-		$self->_load_json_any_driver;
-	} elsif ( eval { require JSON::Syck; 1 } ) {
-		$self->_load_json_syck_driver;
-	} elsif ( eval { require JSON::Converter; 1 } ) {
-		$self->_load_json_converter_driver;
-	} else {
-		croak "Couldn't find a JSON driver, please install JSON::Any or JSON::XS";
+	my $args = $self->json_args;
+
+	for my $method (keys %$args) {
+		if ( $json->can($method) ) {
+			$json->$method( $args->{$method} );
+		}
 	}
+
+	return $json;
 }
 
-sub _load_json_xs_driver {
-    my $self = shift;
-	my $j = JSON::XS->new->utf8->allow_nonref;
-    *json = sub { $j->encode(shift) }
+sub json {
+	my ( $self, $value ) = @_;
+
+	$self->json_converter->encode($value);
 }
 
-sub _load_json_syck_driver {
-    my $self = shift;
-    *json = \&JSON::Syck::Dump;
-}
-
-sub _load_json_converter_driver {
-    my $self = shift;
-
-    my $conv   = JSON::Converter->new;
-    *json = sub {
-        my $data = shift;
-        ref $data ? $conv->objToJson($data) : $conv->valueToJson($data);
-    };
-}
-
-sub _load_json_any_driver {
-    my $self = shift;
-    JSON::Any->import();
-    my $conv = JSON::Any->new(allow_nonref => 1);
-    *json = sub {  
-        $conv->encode($_[0]); 
-    };
+sub BUILD {
+	my $self = shift;
+	$self->context->define_vmethod( $_ => json => sub { $self->json(@_) } ) for qw(hash list scalar);
 }
 
 __PACKAGE__;
