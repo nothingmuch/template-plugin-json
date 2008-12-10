@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 use Template;
 use JSON;
@@ -20,11 +20,9 @@ ok( Template->new->process(
 	\(my $out),
 ), "template processing" ) || warn( Template->error );
 
-warn $out;
-
 like($out, qr/\{\W*foo\W*:\W*bar\W*\}/, "output seems OK" );
 
-like( $out, "\n", "pretty output" );
+like( $out, qr/\n/, "pretty output" );
 
 is_deeply(
 	from_json($out),
