@@ -79,7 +79,7 @@ Template::Plugin::JSON - Adds a .json vmethod for all TT values.
 
 =head1 SYNOPSIS
 
-	[% USE JSON %];
+	[% USE JSON ( pretty => 1 ) %];
 
 	<script type="text/javascript">
 
@@ -91,20 +91,14 @@ Template::Plugin::JSON - Adds a .json vmethod for all TT values.
 
 This plugin provides a C<.json> vmethod to all value types when loaded.
 
-With no argument it will try to load L<JSON::XS>, then L<JSON::Any>. Afterwords
-it will try L<JSON::Syck> and then L<JSON::Converter> for upgrade
-compatibility.  If used as C<[% USE JSON("Syck") %]> or
-C<[% USE JSON("Converter") %]> it will load that specific plugin.
+It will load the L<JSON> module (you probably want L<JSON::XS installed for
+automatic speed ups).
 
-L<JSON::XS> is loaded before L<JSON::Any> due to specific options.
-
-If no plugin could be loaded an exception is thrown. Check for errors from
-L<Template/process>.
+Any options on the USE line are passed through to the JSON object, much like L<JSON/to_json>.
 
 =head1 SEE ALSO
 
-L<JSON::Syck>, L<JSON::Converter>, L<Template::Plugin::VMethods>
-
+L<JSON>, L<Template::Plugin>
 
 =head1 VERSION CONTROL
 
@@ -118,7 +112,7 @@ Yuval Kogman <nothingmuch@woobling.org>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright (c) 2006 Infinity Interactive, Yuval Kogman.
+Copyright (c) 2006, 2008 Infinity Interactive, Yuval Kogman.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
