@@ -1,3 +1,9 @@
+0.04
+	- Switch to using just JSON
+	- Drop Template::Plugin::VMethods, Template::Plugin now has the required
+	  functionality
+	- Accept options (like to_json) in USE statement
+
 0.03
 	- use JSON::Any & JSON::XS
 
