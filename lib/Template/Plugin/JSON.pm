@@ -91,7 +91,7 @@ Template::Plugin::JSON - Adds a .json vmethod for all TT values.
 
 This plugin provides a C<.json> vmethod to all value types when loaded.
 
-It will load the L<JSON> module (you probably want L<JSON::XS installed for
+It will load the L<JSON> module (you probably want L<JSON::XS> installed for
 automatic speed ups).
 
 Any options on the USE line are passed through to the JSON object, much like L<JSON/to_json>.
