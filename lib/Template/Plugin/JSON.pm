@@ -9,7 +9,7 @@ use Carp qw/croak/;
 
 extends qw(Mouse::Object Template::Plugin);
 
-our $VERSION = "0.04";
+our $VERSION = "0.05";
 
 
 has context => (
