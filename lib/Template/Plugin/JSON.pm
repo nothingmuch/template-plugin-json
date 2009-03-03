@@ -105,9 +105,7 @@ L<JSON>, L<Template::Plugin>
 
 =head1 VERSION CONTROL
 
-This module is maintained using Darcs. You can get the latest version from
-L<http://nothingmuch.woobling.org/Template-Plugin-JSON/>, and use C<darcs send>
-to commit changes.
+L<http://github.com/nothingmuch/template-plugin-json/>
 
 =head1 AUTHOR
 
