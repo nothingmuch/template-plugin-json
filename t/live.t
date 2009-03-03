@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 7;
 
 use Template;
 use JSON;
@@ -29,3 +29,15 @@ is_deeply(
 	$vars,
 	"round tripping",
 );
+
+my $warnings = 0;
+
+local $SIG{__WARN__} = sub { $warnings++ };
+
+ok( Template->new->process(
+	\'[% USE JSON %][% SET foo = [ 1, 2, 3 ]; foo.json %]',
+	{},
+	\(my $blah),
+), "template processing" ) || warn( Template->error );
+
+is( $warnings, 0, "no warning" );
