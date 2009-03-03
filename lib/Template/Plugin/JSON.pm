@@ -30,12 +30,15 @@ has json_args => (
 );
 
 sub BUILDARGS {
-    my ( $class, $c, $args ) = @_;
+    my ( $class, $c, @args ) = @_;
 
-	unless ( ref $args ) {
-		warn "Single arguent form is deprecated, this module always uses JSON/JSON::XS now";
-		$args = {};
+	my $args;
+
+	if ( @args == 1 and not ref $args[0] ) {
+		warn "Single argument form is deprecated, this module always uses JSON/JSON::XS now";
 	}
+
+	$args = ref $args[0] ? $args[0] : {};
 
 	return { %$args, context => $c, json_args => $args };
 }
