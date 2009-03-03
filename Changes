@@ -1,3 +1,7 @@
+0.05
+	- Don't warn when no arguments are passed
+	- fix typo in deprecation warning
+
 0.04
 	- Switch to using just JSON
 	- Drop Template::Plugin::VMethods, Template::Plugin now has the required
