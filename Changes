@@ -1,3 +1,6 @@
+0.06
+	- add json_decode method patch by Leo Lapworth
+
 0.05
 	- Don't warn when no arguments are passed
 	- fix typo in deprecation warning

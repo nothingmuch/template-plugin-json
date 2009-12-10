@@ -9,7 +9,7 @@ use Carp qw/croak/;
 
 extends qw(Mouse::Object Template::Plugin);
 
-our $VERSION = "0.05";
+our $VERSION = "0.06";
 
 
 has context => (
@@ -65,6 +65,12 @@ sub json {
 	$self->json_converter->encode($value);
 }
 
+sub json_decode {
+	my ( $self, $value ) = @_;
+
+	$self->json_converter->decode($value);
+}
+
 sub BUILD {
 	my $self = shift;
 	$self->context->define_vmethod( $_ => json => sub { $self->json(@_) } ) for qw(hash list scalar);
@@ -90,9 +96,16 @@ Template::Plugin::JSON - Adds a .json vmethod for all TT values.
 
 	</script>
 
+	or read in JSON
+
+	[% USE JSON %]
+	[% data = JSON.json_decode(json) %]
+	[% data.thing %]
+
 =head1 DESCRIPTION
 
-This plugin provides a C<.json> vmethod to all value types when loaded.
+This plugin provides a C<.json> vmethod to all value types when loaded. You
+can also decode a json string back to a data structure.
 
 It will load the L<JSON> module (you probably want L<JSON::XS> installed for
 automatic speed ups).
