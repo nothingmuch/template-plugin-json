@@ -9,7 +9,7 @@ WriteMakefile(
     'NAME'         => 'Template::Plugin::JSON',
 	'VERSION_FROM' => 'lib/Template/Plugin/JSON.pm',
 	'PREREQ_PM' => {
-		'Mouse'         => '0',
+		'Moose'         => '0',
 		'Template'      => '2.20',
 		'Test::More'    => '0',
 		'Test::use::ok' => '0',

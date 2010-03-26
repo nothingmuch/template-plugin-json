@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
 package Template::Plugin::JSON;
-use Mouse;
+use Moose;
 
 use JSON ();
 
 use Carp qw/croak/;
 
-extends qw(Mouse::Object Template::Plugin);
+extends qw(Moose::Object Template::Plugin);
 
 our $VERSION = "0.06";
 
