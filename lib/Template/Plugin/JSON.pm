@@ -15,6 +15,7 @@ our $VERSION = "0.06";
 has context => (
 	isa => "Object",
 	is  => "ro",
+	weak_ref => 1,
 );
 
 has json_converter => (
